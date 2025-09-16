@@ -35,9 +35,11 @@ def load_data(img_path,train = True):
             img = img.transpose(Image.FLIP_LEFT_RIGHT)
     
     
-    
-    
-    target = cv2.resize(target,(target.shape[1]/8,target.shape[0]/8),interpolation = cv2.INTER_CUBIC)*64
+    h, w = target.shape[0], target.shape[1]
+    target = cv2.resize(target, (w // 8, h // 8), interpolation=cv2.INTER_CUBIC) * 64
+
+    # python 2 version
+    # target = cv2.resize(target,(target.shape[1]/8,target.shape[0]/8),interpolation = cv2.INTER_CUBIC)*64
     
     
     return img,target

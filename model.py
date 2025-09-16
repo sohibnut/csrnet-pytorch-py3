@@ -2,6 +2,7 @@ import torch.nn as nn
 import torch
 from torchvision import models
 from utils import save_net,load_net
+from torchvision.models import VGG16_Weights
 
 class CSRNet(nn.Module):
     def __init__(self, load_weights=False):
@@ -13,10 +14,11 @@ class CSRNet(nn.Module):
         self.backend = make_layers(self.backend_feat,in_channels = 512,dilation = True)
         self.output_layer = nn.Conv2d(64, 1, kernel_size=1)
         if not load_weights:
-            mod = models.vgg16(pretrained = True)
+            mod = models.vgg16(weights = VGG16_Weights.DEFAULT)
             self._initialize_weights()
-            for i in xrange(len(self.frontend.state_dict().items())):
-                self.frontend.state_dict().items()[i][1].data[:] = mod.state_dict().items()[i][1].data[:]
+            for i in range(len(self.frontend.state_dict().items())):
+                self.frontend.load_state_dict(mod.state_dict(), strict=False)
+                # self.frontend.state_dict().items()[i][1].data[:] = mod.state_dict().items()[i][1].data[:]
     def forward(self,x):
         x = self.frontend(x)
         x = self.backend(x)
